@@ -16,7 +16,7 @@ class PostController extends BaseController{
     {
         $post = $this->app->postRepo->getById($id);
         if (!$post) {
-            $app->pass();
+            $this->app->pass();
         } else {
             $this->view->set('post', $post);
             $this->app->render('news/item.twig');
