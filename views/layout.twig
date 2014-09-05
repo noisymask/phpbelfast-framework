@@ -18,9 +18,7 @@
             <a class="navbar-brand" href="/">PHPBelfast Demo</a>
         </div>
         <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="{{ urlFor('posts.index') }}">Posts</a></li>
-            </ul>
+            {{ knp_menu_render(mainMenu) }}
         </div>
         <!--/.nav-collapse -->
     </div>
