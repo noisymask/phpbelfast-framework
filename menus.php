@@ -1,41 +1,60 @@
 <?php
 
-$app->container->set('listRenderer', function() use ($app) {
-    $matcher = new \Knp\Menu\Matcher\Matcher();
-    $matcher->addVoter(new \Knp\Menu\Matcher\Voter\UriVoter($app->request->getResourceUri()));
-    return new \Knp\Menu\Renderer\ListRenderer($matcher);
-});
+// init the menu provider class
+$menuOptions = array(
+    'currentClass' => 'active'
+);
+$menuProvider = new \PhpBelfast\Menu\Provider($app->container, $app->request, $menuOptions);
+
+// use the twig extension in the view
+$app->view->parserExtensions[] = $menuProvider->getTwigExtension();
 
 
-$app->hook('slim.before', function() use ($app){
 
-    $rendererProvider = new \PhpBelfast\Menu\RendererProvider(
-        $app->container,
-        'main',
-        array('main' => 'listRenderer')
-    );
+// start building a menu
+$menuFactory = new \Knp\Menu\MenuFactory();
 
-    $helper = new \Knp\Menu\Twig\Helper($rendererProvider);
-    $menuExtension = new \Knp\Menu\Twig\MenuExtension($helper);
-    $app->view()->parserExtensions[] = $menuExtension;
+// create a new menu with a root node
+$mainMenu = $menuFactory->createItem('root', array(
+    'childrenAttributes' => array(
+        'class' => 'nav navbar-nav'
+    )
+));
 
-});
+// simple link node
+$mainMenu->addChild('Home', array(
+    'uri' => $app->urlFor('home') // \Slim\Route
+));
 
+// node with children
+$mainMenu->addChild('Posts', array(
+    'uri' => '#',
+    'linkAttributes' => array( // attributes for bootstrap
+        'class' => 'dropdown-toggle',
+        'data-toggle' => 'dropdown'
+    ),
+    'childrenAttributes' => array(
+        'class' => 'dropdown-menu'
+    )
+));
 
-$app->hook('slim.before', function() use ($app){
+// add child nodes from the post repository
+$posts = $app->postRepo->getAll();
+foreach ($posts as $post) {
+    $mainMenu['Posts']->addChild($post->title, array(
+        'uri' => $app->urlFor('posts.item', array('id' => $post->id))
+    ));
+}
 
-    $menuFactory = new \Knp\Menu\MenuFactory();
+// external link
+$mainMenu->addChild('PHPBelfast', array(
+    'uri' => 'http://www.phpbelfast.com/'
+));
 
-    $menu = $menuFactory->createItem('root');
-    $menu->setChildrenAttribute('class', 'nav navbar-nav');
+// link without
+$mainMenu->addChild('Coming soon');
 
-    $menu->addChild('Home', array('uri' => '/'));
-    $menu->addChild('Posts', array('uri' => '/posts'));
-    $menu->addChild('PHPBelfast', array('uri' => 'http:/www.phpbelfast.com/'));
-    $menu->addChild('Coming soon');
-
-    $app->view->set('mainMenu', $menu);
-
-});
+// pass it to the view
+$app->view->set('mainMenu', $mainMenu);
 
 
