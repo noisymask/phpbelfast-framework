@@ -41,17 +41,11 @@ class MenuProvider extends \Slim\Middleware
             array('main' => 'listRenderer')
         );
 
-        $this->app->container->set('listRenderer', $this->listRenderer($this->defaultOptions));
-        $this->app->view->parserExtensions[] = $this->getTwigExtension();
-    }
+        $this->app->container->set('listRenderer', $this->listRenderer());
 
-    /**
-     * @return MenuExtension
-     */
-    public function getTwigExtension()
-    {
         $menuHelper = new TwigHelper($this->rendererProvider);
-        return new MenuExtension($menuHelper);
+        $this->app->view->parserExtensions[] = new MenuExtension($menuHelper);
+
     }
 
     /**
