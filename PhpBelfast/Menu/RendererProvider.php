@@ -2,6 +2,8 @@
 
 namespace PhpBelfast\Menu;
 
+use Slim\Helper\Set;
+
 use Knp\Menu\Renderer\RendererProviderInterface;
 
 class RendererProvider implements RendererProviderInterface {
@@ -26,7 +28,7 @@ class RendererProvider implements RendererProviderInterface {
      * @param $defaultRenderer
      * @param array $rendererIds
      */
-    public function __construct(\Slim\Helper\Set $container, $defaultRenderer, array $rendererIds)
+    public function __construct(Set $container, $defaultRenderer, array $rendererIds)
     {
         $this->container = $container;
         $this->rendererIds = $rendererIds;
