@@ -1,15 +1,9 @@
 <?php
+$menuOptions = array(
+    'currentClass' => 'active'
+);
+$app->add(new \PhpBelfast\Middleware\MenuProvider($menuOptions));
 
-// use a hook to init the menu provider
-$app->hook('slim.before', function() use ($app) {
-    $menuOptions = array(
-        'currentClass' => 'active'
-    );
-    $menuProvider = new \PhpBelfast\Menu\Provider($app->container, $app->request, $menuOptions);
-
-    // use the twig extension in the view
-    $app->view->parserExtensions[] = $menuProvider->getTwigExtension();
-});
 
 
 // start building a menu
